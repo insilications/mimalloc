@@ -1,5 +1,5 @@
 PKG_NAME := mimalloc
-URL = https://github.com/insilications/zstd-clr.git
+URL = https://github.com/microsoft/mimalloc.git
 ARCHIVES = 
 ARCHIVES_GIT = 
 
