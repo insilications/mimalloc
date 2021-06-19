@@ -11,6 +11,7 @@ Source0  : file:///aot/build/clearlinux/packages/mimalloc/mimalloc-v2.0.2.tar.gz
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-2.0
+Requires: mimalloc-plugins = %{version}-%{release}
 BuildRequires : binutils-dev
 BuildRequires : binutils-extras
 BuildRequires : bison
@@ -78,6 +79,33 @@ BuildRequires : zlib-staticdev
 <img align="left" width="100" height="100" src="doc/mimalloc-logo.png"/>
 [<img align="right" src="https://dev.azure.com/Daan0324/mimalloc/_apis/build/status/microsoft.mimalloc?branchName=dev"/>](https://dev.azure.com/Daan0324/mimalloc/_build?definitionId=1&_a=summary)
 
+%package dev
+Summary: dev components for the mimalloc package.
+Group: Development
+Provides: mimalloc-devel = %{version}-%{release}
+Requires: mimalloc = %{version}-%{release}
+
+%description dev
+dev components for the mimalloc package.
+
+
+%package plugins
+Summary: plugins components for the mimalloc package.
+Group: Default
+
+%description plugins
+plugins components for the mimalloc package.
+
+
+%package staticdev
+Summary: staticdev components for the mimalloc package.
+Group: Default
+Requires: mimalloc-dev = %{version}-%{release}
+
+%description staticdev
+staticdev components for the mimalloc package.
+
+
 %prep
 %setup -q -n mimalloc
 cd %{_builddir}/mimalloc
@@ -88,7 +116,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1624144076
+export SOURCE_DATE_EPOCH=1624144391
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -130,7 +158,8 @@ export CXXFLAGS="${CXXFLAGS_GENERATE}"
 export FFLAGS="${FFLAGS_GENERATE}"
 export FCFLAGS="${FCFLAGS_GENERATE}"
 export LDFLAGS="${LDFLAGS_GENERATE}"
-%cmake ..   -DMI_SECURE:BOOL=OFF \
+%cmake ..   -DCMAKE_BUILD_TYPE=Release \
+-DMI_SECURE:BOOL=OFF \
 -DMI_DEBUG_FULL:BOOL=OFF \
 -DMI_PADDING:BOOL=OFF \
 -DMI_OVERRIDE:BOOL=ON \
@@ -158,7 +187,8 @@ export CXXFLAGS="${CXXFLAGS_USE}"
 export FFLAGS="${FFLAGS_USE}"
 export FCFLAGS="${FCFLAGS_USE}"
 export LDFLAGS="${LDFLAGS_USE}"
-%cmake .. -DMI_SECURE:BOOL=OFF \
+%cmake .. -DCMAKE_BUILD_TYPE=Release \
+-DMI_SECURE:BOOL=OFF \
 -DMI_DEBUG_FULL:BOOL=OFF \
 -DMI_PADDING:BOOL=OFF \
 -DMI_OVERRIDE:BOOL=ON \
@@ -178,18 +208,31 @@ fi
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1624144076
+export SOURCE_DATE_EPOCH=1624144391
 rm -rf %{buildroot}
 pushd clr-build
 %make_install
 popd
-## install_append content
-install -dm 0755 %{buildroot}/usr/lib64/haswell/
-cp --archive %{buildroot}/usr/lib64/*.so* %{buildroot}/usr/lib64/haswell/
-pushd %{buildroot}/usr/lib64/
-for i in *.a; do ln -sf /usr/lib64/$i %{buildroot}/usr/lib64/haswell/$i; done;
-popd
-## install_append end
 
 %files
 %defattr(-,root,root,-)
+/usr/cmake/mimalloc-config-version.cmake
+/usr/cmake/mimalloc-config.cmake
+/usr/cmake/mimalloc-release.cmake
+/usr/cmake/mimalloc.cmake
+/usr/lib/mimalloc.o
+
+%files dev
+%defattr(-,root,root,-)
+/usr/include/mimalloc-new-delete.h
+/usr/include/mimalloc-override.h
+/usr/include/mimalloc.h
+/usr/lib/libmimalloc.so
+
+%files plugins
+%defattr(-,root,root,-)
+/usr/lib/libmimalloc.so.2.0
+
+%files staticdev
+%defattr(-,root,root,-)
+/usr/lib/libmimalloc.a
