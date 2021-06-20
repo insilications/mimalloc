@@ -1,0 +1,51 @@
+From b0ff38aeb39bcfb1f097b0049ac204d3701e401e Mon Sep 17 00:00:00 2001
+From: Francisco Boni <boboniboni@gmail.com>
+Date: Sun, 20 Jun 2021 06:17:50 -0300
+Subject: [PATCH] Enable THP only
+
+---
+ CMakeLists.txt | 4 ++--
+ src/os.c       | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a5f3288..8d99500 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -208,9 +208,9 @@ endif()
+ # -----------------------------------------------------------------------------
+ 
+ if (MI_INSTALL_TOPLEVEL)
+-  set(mi_install_libdir   "lib")
++  set(mi_install_libdir   "lib64")
+   set(mi_install_incdir   "include")
+-  set(mi_install_cmakedir "cmake")
++  set(mi_install_cmakedir "share/cmake")
+ else()
+   set(mi_install_libdir   "lib/mimalloc-${mi_version}")
+   set(mi_install_incdir   "include/mimalloc-${mi_version}")
+diff --git a/src/os.c b/src/os.c
+index 6e47646..d6ffaa0 100644
+--- a/src/os.c
++++ b/src/os.c
+@@ -377,7 +377,7 @@ static void* mi_unix_mmap(void* addr, size_t size, size_t try_alignment, int pro
+   #if defined(PROT_MAX)
+   protect_flags |= PROT_MAX(PROT_READ | PROT_WRITE); // BSD
+   #endif  
+-  if ((large_only || use_large_os_page(size, try_alignment)) && allow_large) {
++  /* if ((large_only || use_large_os_page(size, try_alignment)) && allow_large) {
+     static _Atomic(uintptr_t) large_page_try_ok; // = 0;
+     uintptr_t try_ok = mi_atomic_load_acquire(&large_page_try_ok);
+     if (!large_only && try_ok > 0) {
+@@ -429,7 +429,7 @@ static void* mi_unix_mmap(void* addr, size_t size, size_t try_alignment, int pro
+         }
+       }
+     }
+-  }
++  } */
+   if (p == NULL) {
+     *is_large = false;
+     p = mi_unix_mmapx(addr, size, try_alignment, protect_flags, flags, fd);
+-- 
+2.32.0
+

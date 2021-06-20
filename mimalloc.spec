@@ -5,12 +5,14 @@
 %define keepstatic 1
 Name     : mimalloc
 Version  : 2.0.2
-Release  : 78
+Release  : 79
 URL      : file:///aot/build/clearlinux/packages/mimalloc/mimalloc-v2.0.2.tar.gz
 Source0  : file:///aot/build/clearlinux/packages/mimalloc/mimalloc-v2.0.2.tar.gz
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-2.0
+Requires: mimalloc-data = %{version}-%{release}
+Requires: mimalloc-lib = %{version}-%{release}
 BuildRequires : binutils-dev
 BuildRequires : binutils-extras
 BuildRequires : bison
@@ -56,6 +58,7 @@ BuildRequires : libgcc1
 BuildRequires : libstdc++
 BuildRequires : libunwind
 BuildRequires : libunwind-dev
+BuildRequires : linux-dev
 BuildRequires : lz4-dev
 BuildRequires : lz4-dev32
 BuildRequires : lz4-staticdev
@@ -73,14 +76,54 @@ BuildRequires : zlib-staticdev
 # Suppress stripping binaries
 %define __strip /bin/true
 %define debug_package %{nil}
+Patch1: 0001-Enable-THP-only.patch
 
 %description
 <img align="left" width="100" height="100" src="doc/mimalloc-logo.png"/>
 [<img align="right" src="https://dev.azure.com/Daan0324/mimalloc/_apis/build/status/microsoft.mimalloc?branchName=dev"/>](https://dev.azure.com/Daan0324/mimalloc/_build?definitionId=1&_a=summary)
 
+%package data
+Summary: data components for the mimalloc package.
+Group: Data
+
+%description data
+data components for the mimalloc package.
+
+
+%package dev
+Summary: dev components for the mimalloc package.
+Group: Development
+Requires: mimalloc-lib = %{version}-%{release}
+Requires: mimalloc-data = %{version}-%{release}
+Provides: mimalloc-devel = %{version}-%{release}
+Requires: mimalloc = %{version}-%{release}
+
+%description dev
+dev components for the mimalloc package.
+
+
+%package lib
+Summary: lib components for the mimalloc package.
+Group: Libraries
+Requires: mimalloc-data = %{version}-%{release}
+
+%description lib
+lib components for the mimalloc package.
+
+
+%package staticdev
+Summary: staticdev components for the mimalloc package.
+Group: Default
+Requires: mimalloc-dev = %{version}-%{release}
+
+%description staticdev
+staticdev components for the mimalloc package.
+
+
 %prep
 %setup -q -n mimalloc
 cd %{_builddir}/mimalloc
+%patch1 -p1
 
 %build
 unset http_proxy
@@ -88,7 +131,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1624153342
+export SOURCE_DATE_EPOCH=1624182189
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -146,9 +189,9 @@ export LDFLAGS="${LDFLAGS_GENERATE}"
 -DMI_CHECK_FULL:BOOL=OFF \
 -DMI_INSTALL_TOPLEVEL:BOOL=ON \
 -DMI_BUILD_TESTS:BOOL=ON
-make    V=1 VERBOSE=1
+make  %{?_smp_mflags}    V=1 VERBOSE=1
 
-ctest --parallel 16 -V --progress --timeout 200 || :
+ctest --parallel 16 -V --progress --timeout 400 || :
 find . -type f,l -not -name '*.gcno' -not -name 'statuspgo*' -delete -print
 echo USED > statuspgo
 fi
@@ -175,12 +218,12 @@ export LDFLAGS="${LDFLAGS_USE}"
 -DMI_CHECK_FULL:BOOL=OFF \
 -DMI_INSTALL_TOPLEVEL:BOOL=ON \
 -DMI_BUILD_TESTS:BOOL=OFF
-make    V=1 VERBOSE=1
+make  %{?_smp_mflags}    V=1 VERBOSE=1
 fi
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1624153342
+export SOURCE_DATE_EPOCH=1624182189
 rm -rf %{buildroot}
 pushd clr-build
 %make_install
@@ -188,3 +231,23 @@ popd
 
 %files
 %defattr(-,root,root,-)
+/usr/lib64/mimalloc.o
+
+%files data
+%defattr(-,root,root,-)
+/usr/share/cmake/*
+
+%files dev
+%defattr(-,root,root,-)
+/usr/include/mimalloc-new-delete.h
+/usr/include/mimalloc-override.h
+/usr/include/mimalloc.h
+/usr/lib64/libmimalloc.so
+
+%files lib
+%defattr(-,root,root,-)
+/usr/lib64/libmimalloc.so.2.0
+
+%files staticdev
+%defattr(-,root,root,-)
+/usr/lib64/libmimalloc.a
