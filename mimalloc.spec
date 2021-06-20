@@ -5,13 +5,12 @@
 %define keepstatic 1
 Name     : mimalloc
 Version  : 2.0.2
-Release  : 77
+Release  : 78
 URL      : file:///aot/build/clearlinux/packages/mimalloc/mimalloc-v2.0.2.tar.gz
 Source0  : file:///aot/build/clearlinux/packages/mimalloc/mimalloc-v2.0.2.tar.gz
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-2.0
-Requires: mimalloc-plugins = %{version}-%{release}
 BuildRequires : binutils-dev
 BuildRequires : binutils-extras
 BuildRequires : bison
@@ -79,33 +78,6 @@ BuildRequires : zlib-staticdev
 <img align="left" width="100" height="100" src="doc/mimalloc-logo.png"/>
 [<img align="right" src="https://dev.azure.com/Daan0324/mimalloc/_apis/build/status/microsoft.mimalloc?branchName=dev"/>](https://dev.azure.com/Daan0324/mimalloc/_build?definitionId=1&_a=summary)
 
-%package dev
-Summary: dev components for the mimalloc package.
-Group: Development
-Provides: mimalloc-devel = %{version}-%{release}
-Requires: mimalloc = %{version}-%{release}
-
-%description dev
-dev components for the mimalloc package.
-
-
-%package plugins
-Summary: plugins components for the mimalloc package.
-Group: Default
-
-%description plugins
-plugins components for the mimalloc package.
-
-
-%package staticdev
-Summary: staticdev components for the mimalloc package.
-Group: Default
-Requires: mimalloc-dev = %{version}-%{release}
-
-%description staticdev
-staticdev components for the mimalloc package.
-
-
 %prep
 %setup -q -n mimalloc
 cd %{_builddir}/mimalloc
@@ -116,7 +88,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1624144391
+export SOURCE_DATE_EPOCH=1624153342
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -208,7 +180,7 @@ fi
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1624144391
+export SOURCE_DATE_EPOCH=1624153342
 rm -rf %{buildroot}
 pushd clr-build
 %make_install
@@ -216,23 +188,3 @@ popd
 
 %files
 %defattr(-,root,root,-)
-/usr/cmake/mimalloc-config-version.cmake
-/usr/cmake/mimalloc-config.cmake
-/usr/cmake/mimalloc-release.cmake
-/usr/cmake/mimalloc.cmake
-/usr/lib/mimalloc.o
-
-%files dev
-%defattr(-,root,root,-)
-/usr/include/mimalloc-new-delete.h
-/usr/include/mimalloc-override.h
-/usr/include/mimalloc.h
-/usr/lib/libmimalloc.so
-
-%files plugins
-%defattr(-,root,root,-)
-/usr/lib/libmimalloc.so.2.0
-
-%files staticdev
-%defattr(-,root,root,-)
-/usr/lib/libmimalloc.a
