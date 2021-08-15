@@ -70,6 +70,8 @@ BuildRequires : pkgconfig(liblz4)
 BuildRequires : pkgconfig(liblzma)
 BuildRequires : pkgconfig(zlib)
 BuildRequires : ruby
+BuildRequires : time
+BuildRequires : time-bin
 BuildRequires : unzip
 BuildRequires : wget
 BuildRequires : xz-dev
@@ -107,7 +109,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1629021469
+export SOURCE_DATE_EPOCH=1629022515
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -218,7 +220,13 @@ make  %{?_smp_mflags}    V=1 VERBOSE=1
 unset LD_LIBRARY_PATH
 unset LIBRARY_PATH
 pushd ../mimalloc-bench
-./build-bench-env.sh --procs=16 mi lean redis bench
+./build-bench-env.sh --procs=16 mi lean redis
+unset CFLAGS
+unset CXXFLAGS
+unset FFLAGS
+unset FCFLAGS
+unset LDFLAGS
+./build-bench-env.sh --procs=16 bench
 pushd out/bench
 ../../bench.sh mi allt
 popd
@@ -260,7 +268,7 @@ fi
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1629021469
+export SOURCE_DATE_EPOCH=1629022515
 rm -rf %{buildroot}
 pushd clr-build
 %make_install

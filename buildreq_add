@@ -41,6 +41,7 @@ gmp-dev
 gmp-staticdev
 graphviz
 guile
+iputils
 libedit
 libedit-dev
 libffi-dev
@@ -55,6 +56,8 @@ lz4-dev32
 lz4-staticdev
 nasm
 ruby
+time
+time-bin
 unzip
 wget
 xz-dev
