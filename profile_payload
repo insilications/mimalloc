@@ -1,7 +1,14 @@
 pushd ../mimalloc-bench
-./build-bench-env.sh --procs=16 mi lean redis bench
+./build-bench-env.sh --procs=16 mi lean redis
+unset CFLAGS
+unset CXXFLAGS
+unset FFLAGS
+unset FCFLAGS
+unset LDFLAGS
+./build-bench-env.sh --procs=16 bench
 pushd out/bench
 ../../bench.sh mi allt
 popd
 popd
+exit
 ctest --parallel 1 -V --progress --timeout 500 || :
