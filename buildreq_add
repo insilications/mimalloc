@@ -42,6 +42,7 @@ gmp-staticdev
 graphviz
 guile
 iputils
+jemalloc-dev
 libedit
 libedit-dev
 libffi-dev
@@ -55,7 +56,9 @@ lz4-dev
 lz4-dev32
 lz4-staticdev
 nasm
+procps-ng
 ruby
+tcl
 time
 time-bin
 unzip

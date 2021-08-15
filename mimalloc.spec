@@ -12,6 +12,8 @@ Source1  : file:///aot/build/clearlinux/packages/mimalloc/mimalloc-bench-clr-v1.
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-2.0
+Requires: mimalloc-data = %{version}-%{release}
+Requires: mimalloc-lib = %{version}-%{release}
 BuildRequires : autoconf
 BuildRequires : bc
 BuildRequires : binutils-dev
@@ -53,6 +55,8 @@ BuildRequires : gmp-dev
 BuildRequires : gmp-staticdev
 BuildRequires : graphviz
 BuildRequires : guile
+BuildRequires : iputils
+BuildRequires : jemalloc-dev
 BuildRequires : libedit
 BuildRequires : libedit-dev
 BuildRequires : libffi-dev
@@ -69,7 +73,9 @@ BuildRequires : nasm
 BuildRequires : pkgconfig(liblz4)
 BuildRequires : pkgconfig(liblzma)
 BuildRequires : pkgconfig(zlib)
+BuildRequires : procps-ng
 BuildRequires : ruby
+BuildRequires : tcl
 BuildRequires : time
 BuildRequires : time-bin
 BuildRequires : unzip
@@ -92,6 +98,52 @@ Patch3: 0003-Add-updated-tests-with-static.patch
 <img align="left" width="100" height="100" src="doc/mimalloc-logo.png"/>
 [<img align="right" src="https://dev.azure.com/Daan0324/mimalloc/_apis/build/status/microsoft.mimalloc?branchName=dev"/>](https://dev.azure.com/Daan0324/mimalloc/_build?definitionId=1&_a=summary)
 
+%package data
+Summary: data components for the mimalloc package.
+Group: Data
+
+%description data
+data components for the mimalloc package.
+
+
+%package dev
+Summary: dev components for the mimalloc package.
+Group: Development
+Requires: mimalloc-lib = %{version}-%{release}
+Requires: mimalloc-data = %{version}-%{release}
+Provides: mimalloc-devel = %{version}-%{release}
+Requires: mimalloc = %{version}-%{release}
+
+%description dev
+dev components for the mimalloc package.
+
+
+%package extras
+Summary: extras components for the mimalloc package.
+Group: Default
+
+%description extras
+extras components for the mimalloc package.
+
+
+%package lib
+Summary: lib components for the mimalloc package.
+Group: Libraries
+Requires: mimalloc-data = %{version}-%{release}
+
+%description lib
+lib components for the mimalloc package.
+
+
+%package staticdev
+Summary: staticdev components for the mimalloc package.
+Group: Default
+Requires: mimalloc-dev = %{version}-%{release}
+
+%description staticdev
+staticdev components for the mimalloc package.
+
+
 %prep
 %setup -q -n mimalloc
 cd %{_builddir}
@@ -109,7 +161,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1629022515
+export SOURCE_DATE_EPOCH=1629024705
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -228,10 +280,9 @@ unset FCFLAGS
 unset LDFLAGS
 ./build-bench-env.sh --procs=16 bench
 pushd out/bench
-../../bench.sh mi allt
+../../bench.sh --procs=16 mi allt
 popd
 popd
-exit
 ctest --parallel 1 -V --progress --timeout 500 || :
 export LD_LIBRARY_PATH="/usr/nvidia/lib64:/usr/nvidia/lib64/vdpau:/usr/nvidia/lib64/xorg/modules/drivers:/usr/nvidia/lib64/xorg/modules/extensions:/usr/local/cuda/lib64:/usr/lib64/haswell:/usr/lib64/dri:/usr/lib64/chromium:/usr/lib64:/usr/lib64/pulseaudio:/usr/lib64/alsa-lib:/usr/lib64/gstreamer-1.0:/usr/lib64/pipewire-0.3:/usr/lib64/spa-0.2:/usr/lib:/aot/intel/oneapi/compiler/latest/linux/compiler/lib/intel64_lin:/aot/intel/oneapi/compiler/latest/linux/lib:/aot/intel/oneapi/mkl/latest/lib/intel64:/aot/intel/oneapi/tbb/latest/lib/intel64/gcc4.8:/usr/share:/usr/lib64/wine:/usr/nvidia/lib32:/usr/nvidia/lib32/vdpau:/usr/lib32:/usr/lib32/wine"
 export LIBRARY_PATH="/usr/nvidia/lib64:/usr/nvidia/lib64/vdpau:/usr/nvidia/lib64/xorg/modules/drivers:/usr/nvidia/lib64/xorg/modules/extensions:/usr/local/cuda/lib64:/usr/lib64/haswell:/usr/lib64/dri:/usr/lib64/chromium:/usr/lib64:/usr/lib64/pulseaudio:/usr/lib64/alsa-lib:/usr/lib64/gstreamer-1.0:/usr/lib64/pipewire-0.3:/usr/lib64/spa-0.2:/usr/lib:/aot/intel/oneapi/compiler/latest/linux/compiler/lib/intel64_lin:/aot/intel/oneapi/compiler/latest/linux/lib:/aot/intel/oneapi/mkl/latest/lib/intel64:/aot/intel/oneapi/tbb/latest/lib/intel64/gcc4.8:/usr/share:/usr/lib64/wine:/usr/nvidia/lib32:/usr/nvidia/lib32/vdpau:/usr/lib32:/usr/lib32/wine"
@@ -268,7 +319,7 @@ fi
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1629022515
+export SOURCE_DATE_EPOCH=1629024705
 rm -rf %{buildroot}
 pushd clr-build
 %make_install
@@ -276,3 +327,26 @@ popd
 
 %files
 %defattr(-,root,root,-)
+
+%files data
+%defattr(-,root,root,-)
+/usr/share/cmake/*
+
+%files dev
+%defattr(-,root,root,-)
+/usr/include/mimalloc-new-delete.h
+/usr/include/mimalloc-override.h
+/usr/include/mimalloc.h
+/usr/lib64/libmimalloc.so
+
+%files extras
+%defattr(-,root,root,-)
+/usr/lib64/mimalloc.o
+
+%files lib
+%defattr(-,root,root,-)
+/usr/lib64/libmimalloc.so.2.0
+
+%files staticdev
+%defattr(-,root,root,-)
+/usr/lib64/libmimalloc.a
