@@ -1,1 +1,1 @@
-ctest --parallel 16 -V --progress --timeout 400 || :
+ctest --parallel 1 -V --progress --timeout 500 || :
