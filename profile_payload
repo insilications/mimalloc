@@ -1,1 +1,7 @@
+pushd ../mimalloc-bench
+./build-bench-env.sh --procs=16 mi lean redis bench
+pushd out/bench
+../../bench.sh mi allt
+popd
+popd
 ctest --parallel 1 -V --progress --timeout 500 || :

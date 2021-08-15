@@ -1,11 +1,14 @@
 # This file contains additional build requirements that did not get
 # picked up automatically. One name per line, no whitespace.
+autoconf
+bc
 binutils-dev
 binutils-extras
 bison
 dejagnu
 docbook-utils
 docbook-xml
+dos2unix
 doxygen
 elfutils-dev
 expect
@@ -20,6 +23,7 @@ gcc-libstdc++32
 gcc-libubsan
 gcc-locale
 gdb-dev
+ghostscript
 git
 glibc-bin
 glibc-dev
@@ -42,17 +46,22 @@ libffi-dev
 libffi-staticdev
 libgcc1
 libstdc++
+libtool
 libunwind
 libunwind-dev
+linux-dev
 lz4-dev
 lz4-dev32
 lz4-staticdev
+mpir
+nasm
+ruby
+unzip
+wget
 xz-dev
 xz-dev32
 xz-staticdev
+yasm
 zlib-dev
 zlib-dev32
 zlib-staticdev
-nasm
-yasm
-linux-dev
