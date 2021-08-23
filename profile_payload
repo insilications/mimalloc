@@ -7,7 +7,7 @@ unset FCFLAGS
 unset LDFLAGS
 ./build-bench-env.sh --procs=16 bench
 pushd out/bench
-../../bench.sh --procs=16 mi allt
+../../bench.sh --procs=1 mi allt
 popd
 popd
 ctest --parallel 1 -V --progress --timeout 500 || :
